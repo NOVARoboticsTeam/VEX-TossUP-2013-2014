@@ -1,4 +1,4 @@
-#pragma config(I2C_Usage, I2C1, i2cSensors)
+ #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    batVolt,        sensorAnalog)
 #pragma config(Sensor, in2,    pot,            sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  Launcher,       sensorDigitalOut)
@@ -38,6 +38,19 @@
 // following function.
 //
 /////////////////////////////////////////////////////////////////////////////////////////
+typedef struct{
+
+	float Ki;
+	float Kp;
+	float Kd;
+	float error;
+	float integral;
+	float derivative;
+	float targetVal;
+	float lastError;
+	bool isRunning;
+
+}PIDController;
 int count = 0;
 const short leftButton = 1;
 const short centerButton = 2;
