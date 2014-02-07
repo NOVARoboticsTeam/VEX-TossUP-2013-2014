@@ -22,6 +22,7 @@
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
 
+// Directional and motor speed functions - Enable the robot to move in a certain direction, stop motors, turn, etc.
 void forward(int speed)
 {
 	motor[rightFront] = speed;
@@ -38,19 +39,20 @@ void reverse(int speed)
 
 
 }
-void turnRight()
+void turnRight(int speed)
+
 {
-	motor[rightFront] = -127;
-	motor[rightRear] = -127;
-	motor[leftFront] = 127;
-	motor[leftRear] = 127;
+	motor[rightFront] = -speed;
+	motor[rightRear] = -speed;
+	motor[leftFront] = speed;
+	motor[leftRear] = speed;
 }
 void turnLeft()
 {
-	motor[rightFront] = 127;
-	motor[rightRear] = 127;
-	motor[leftFront] = -127;
-	motor[leftRear] = -127;
+	motor[rightFront] = speed;
+	motor[rightRear] = speed;
+	motor[leftFront] = -speed;
+	motor[leftRear] = -speed;
 }
 void halt()
 {
@@ -66,47 +68,23 @@ void resetEncoders()
 	nMotorEncoder[rightFront]=0;
 	nMotorEncoder[rightRear]=0;
 }
-/*void UpArm()
-{
-	motor[leftArm] = 127;
-	motor[rightArm] = 127;
-}
-void DownArm()
-{
-	motor[leftArm] =-127;
-	motor[rightArm] = -127;
-}
-void ArmStop()
-{
-	motor[leftArm] = 0;
-	motor[rightArm] = 0;
-}*/
-
-/*void shooter(int powerLevel, int time, float ratio)
-{
-	for(int id = 0; id < time; id +=10)
-	{
-		motor[leftShooter] = powerLevel;
-		motor[rightShooter] = powerLevel;
-		wait1Msec(time/id);
-		powerLevel = powerLevel*ratio + powerLevel;
-	}
-}*/
+// Strafing Functions - Enables the robot to move laterally at an indicated speed by the user.
 void strafeRight()
 {
-	motor[rightFront] = -127;
-	motor[rightRear] = 127;
-	motor[leftFront] = 127;
-	motor[leftRear] = -127;
+	motor[rightFront] = -speed;
+	motor[rightRear] = speed;
+	motor[leftFront] = speed;
+	motor[leftRear] = -speed;
 }
 void strafeLeft()
 {
-	motor[rightFront] = 127;
-	motor[rightRear] = -127;
-	motor[leftFront] = -127;
-	motor[leftRear] = 127;
+	motor[rightFront] = speed;
+	motor[rightRear] = -speed;
+	motor[leftFront] = -speed;
+	motor[leftRear] = speed;
 }
 
+//Function to actuate and de-actuate the pneumatics
 void tossUp()
 {
 	SensorValue[solenoid1] = 1;
@@ -145,45 +123,59 @@ void pre_auton()
 task autonomous()
 {
 
+
+	clearTimer(T1);
 	tossUp();
   wait1Msec(2000);
-  tossDown();
+  tossDown(); // Brings pneumatic scoop down and in position to move game objects
   wait1Msec(2000);
 	resetEncoders();
-  while(nMotorEncoder[leftRear] < 450)
+
+  while(nMotorEncoder[leftRear] < 450) // Robot moves forward to pick up game first game object directly in front of it
   {
   	forward(63);
   }
   halt();
   wait1Msec(500);
   resetEncoders();
-  while(nMotorEncoder[leftRear] > -300)
+  while(nMotorEncoder[leftRear] > -300 || time1[T1] < 2000) // Robot backs up with game object
   {
   	reverse(63);
   }
   halt();
-	tossUp();
+	tossUp();  // Flings game object with pneumatic scoop.
 	wait1Msec(2000);
 	tossDown();
 	halt();
 	wait1Msec(500);
 	resetEncoders();
+
+	//Following features are a repetition of the earlier sequence
 	while(nMotorEncoder[leftRear] < 400)
 	{
 		forward(63);
 	}
 	halt();
-	tossUp();
-	wait1Msec(2000);
-	tossDown();
-	halt();
 	wait1Msec(500);
+	clearTimer(T1); // Timer is used as a time out and backup in case integrated motor encoders are inoperational.
 	resetEncoders();
-	while(nMotorEncoder[leftRear] > -300)
+	while(nMotorEncoder[leftRear] > -300 || time1[T1] < 2000)
 	{
 		reverse(63);
 	}
-
+	halt();
+	tossUp();
+	wait1Msec(2000);
+	tossDown();
+	wait1Msec(2000);
+	halt();
+	resetEncoders();
+	/*while(nMotorEncoder[leftRear] >  -1000)
+	{
+		turnLeft();
+	}
+	halt();
+	wait1Msec(500);*/
 
 
 }
@@ -203,6 +195,8 @@ task usercontrol()
 
 	while (true)
 	{
+				// Using a tank-style mecanum drive. Ch3 is the left vertical channel, Ch4 is the left horizontal channel
+				// Likewise, Ch2 and Ch1 are the right vertical and right horizontal channels, respectively
 				motor[leftFront] = vexRT[Ch3] + vexRT[Ch4];
 				motor[rightFront] = vexRT[Ch2] - vexRT[Ch1];
 				motor[leftRear] = vexRT[Ch3] - vexRT[Ch4];
