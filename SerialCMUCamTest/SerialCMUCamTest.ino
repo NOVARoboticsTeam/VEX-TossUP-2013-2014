@@ -16,18 +16,48 @@
 #include <CMUcam4.h>
 #include <CMUcom4.h>
 
-#define RED_MIN 230
-#define RED_MAX 255
-#define GREEN_MIN 230
-#define GREEN_MAX 255
-#define BLUE_MIN 230
-#define BLUE_MAX 255
+#define RED_MIN 187
+#define RED_MAX 217
+#define GREEN_MIN 118
+#define GREEN_MAX 183
+#define BLUE_MIN 106
+#define BLUE_MAX 125
+// Red Buckyball Tracking Values
+
+#define RED_MIN1 78 
+#define RED_MAX1 113
+#define GREEN_MIN1 101
+#define GREEN_MAX1 167
+#define BLUE_MIN1 162
+#define BLUE_MAX1 201
+//Blue Buckyball Tracking Values
+
+#define RED_MIN2 134
+#define RED_MAX2 183
+#define GREEN_MIN2 79
+#define GREEN_MAX2 93
+#define BLUE_MIN2 84
+#define BLUE_MAX2 108
+//Red Large ball Tracking Values
+
+
+#define RED_MIN3 63
+#define RED_MAX3 88
+#define GREEN_MIN3 91
+#define GREEN_MAX3 119
+#define BLUE_MIN3 109
+#define BLUE_MAX3 168
+//Blue Large Ball Tracking Values
+
+
 
 #define LED_BLINK 5 // 5 Hz
 #define WAIT_TIME 5000 // 5 seconds
 #define YUV_MODE true 
 
 CMUcam4 cam(CMUCOM4_SERIAL1);
+
+
 
 typedef struct _vdata {
       unsigned char  header_aa;
@@ -42,6 +72,7 @@ typedef struct _vdata {
       unsigned short y2;
       unsigned short pixels;
       unsigned short confidence;
+      unsigned short poll; 
       unsigned char  id;
       unsigned char  checksum;
       } vdata;
