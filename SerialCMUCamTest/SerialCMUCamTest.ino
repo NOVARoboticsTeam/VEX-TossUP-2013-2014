@@ -120,7 +120,7 @@ void setup()
 
   cam.LEDOn(LED_BLINK);
   delay(WAIT_TIME);
-
+      serialInit(115200); 
   // Turn auto gain and auto white balance off.
 
   cam.autoGainControl(false);
@@ -141,10 +141,6 @@ void loop()
     cam.getTypeTDataPacket(&t_data); // Get a tracking packet.
 
     // Process the packet data safely here.
-  }
-
-  
-
     MyVexDataTx.data.mx =  (short)&t_data.mx; 
     MyVexDataTx.data.my = (short)&t_data.my; 
     MyVexDataTx.data.x1 = (short)&t_data.x1; 
@@ -161,6 +157,11 @@ void loop()
 
     // Transmit data
     VexDataTransmit( &MyVexDataTx );
+  }
+
+  
+
+    
 }
 
 void
